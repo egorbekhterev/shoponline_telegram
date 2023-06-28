@@ -19,9 +19,17 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
 
     private final TelegramBotConfig config;
 
-    public TelegramBotService(@Value("${tg.token}") String botToken, TelegramBotConfig config) {
+    private RabbitMqDeliveryPublisher rabbitMqDeliveryPublisher;
+
+    private RabbitMqTelegramListener rabbitMqTelegramListener;
+
+    public TelegramBotService(@Value("${tg.token}") String botToken, TelegramBotConfig config,
+                              RabbitMqDeliveryPublisher rabbitMqDeliveryPublisher,
+                              RabbitMqTelegramListener rabbitMqTelegramListener) {
         super(botToken);
         this.config = config;
+        this.rabbitMqDeliveryPublisher = rabbitMqDeliveryPublisher;
+        this.rabbitMqTelegramListener = rabbitMqTelegramListener;
         try {
             this.execute(new SetMyCommands(LIST_OF_COMMANDS, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -39,7 +47,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
         UpdateHandler startHandler = new StartHandler();
         UpdateHandler helpHandler = new HelpHandler();
         UpdateHandler contactHandler = new ContactHandler();
-        UpdateHandler phoneNumberHandler = new PhoneNumberHandler();
+        UpdateHandler phoneNumberHandler = new PhoneNumberHandler(rabbitMqDeliveryPublisher, rabbitMqTelegramListener);
         startHandler.setNext(helpHandler).setNext(contactHandler).setNext(phoneNumberHandler);
         var msg = startHandler.handleUpdate(update);
         send(msg);
