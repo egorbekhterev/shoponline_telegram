@@ -1,11 +1,14 @@
+server.port: 8110
 tg.username: shoponline_test_bot
 tg.token: 5834394816:AAEqjbg0upLgyLwOBYEm3VDPyxy0zZL139o
 spring:
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
-
-server:
-  port: 8070
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
