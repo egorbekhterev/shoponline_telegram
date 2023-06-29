@@ -56,7 +56,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     private void send(BotApiMethod msg) {
         try {
             execute(msg);
-            log.info("Reply sent.");
+            log.info("Reply sent. {}", msg.toString());
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }

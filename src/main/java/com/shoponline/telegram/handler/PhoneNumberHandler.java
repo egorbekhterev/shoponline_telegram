@@ -25,14 +25,6 @@ public class PhoneNumberHandler extends UpdateHandler {
         var phoneNumber = update.getMessage().getContact().getPhoneNumber();
         rabbitMqDeliveryPublisher.publishDeliveryUpdate(phoneNumber);
         String status = rabbitMqTelegramListener.getStatus();
-        if (status == null) {
-            try {
-                Thread.sleep(1000);
-                status = rabbitMqTelegramListener.getStatus();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(String.format("Your package status: %s", status));
